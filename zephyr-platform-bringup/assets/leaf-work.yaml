@@ -1,0 +1,21 @@
+# Copy for a new work_config; replace work_id and define meaningful ordered steps.
+schema_version: 1
+work_id: new-work
+inputs: {} # Nonsecret values; null required values are resolved interactively
+steps:
+  - id: inspect
+    action: inspect
+    skippable: false
+    depends_on: []
+    instructions: Inspect the inputs and identify the evidence needed for this work's aggregate criterion
+    success_checks:
+      - id: inputs-ready
+        expected: Required inputs are identified and available
+        verification: Compare inspected inputs with the recorded work criterion
+        evidence: []
+    checkpoint_after: true
+completion:
+  commit:
+    skippable: null # Inherit plan template; true/false overrides this leaf's commit child
+  update_report:
+    skippable: null # Inherit report template

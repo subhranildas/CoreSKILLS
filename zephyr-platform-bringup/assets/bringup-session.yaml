@@ -1,0 +1,195 @@
+# Resumable workflow record. Commands are descriptive data; do not evaluate this file.
+schema_version: 15
+session:
+  name: null
+  run_id: null
+  previous_run_archive: null
+  flow_log: null
+  custom_command_tool: null # Resolved absolute installed script path
+  boundaries:
+    application_root: null
+    runtime_root: null
+    protected_roots: [] # Full source library repository and installed skill definitions
+  stage: discover # discover, assess, contract, integrate, register, build, hardware, handoff
+  status: in_progress # in_progress, awaiting_input, awaiting_intervention, paused, stopped, blocked, complete
+  source_revision: null
+  source_dirty_state: null
+  platform_profile: null
+  workflow_plan: null # Project copy of workflow-plan.yaml; editable policy source
+  workflow_edit_session: null # Pending/resumable workflow-tree-editor record
+workflow:
+  root_id: add-platform
+  execution:
+    mode: full # full or scoped
+    selected_node: add-platform
+    allowed_node_ids: [] # Materialize from validated selection before scheduling
+    concrete_instance_ids: []
+    instance_filters: {}
+    external_prerequisites: [] # ID, evidence/provenance, input identity, verification
+    stop_after_selected_node: true
+    plan_sha256: null
+    return_session: null # Read-only parent run if invoked from a paused full workflow
+    return_checkpoint: null
+    selection_review: null
+  root_config: null
+  root_config_sha256: null
+  root_config_snapshot: null # Immutable content-addressed snapshot path
+  config_snapshot_history: [] # Each: config path, SHA-256, snapshot path, adopted revision
+  event_cursor: null
+  event_results: [] # Per event: config/input identity, status, checks, evidence, skips, attempts
+  status: in_progress # in_progress, awaiting_input, awaiting_intervention, paused, stopped, blocked, complete
+  commit_policy:
+    skill: git-work-commit
+    when: after_successful_work_unit
+    signoff_required: true
+    interactive_review: true
+    result_acceptance_required: true
+  report_policy:
+    skill: commit-update-report
+    when: after_every_actual_commit
+    output_directory: null # Default bringup/<platform>/updates
+  interaction_mode: checkpointed # checkpointed, automatic (only if requested)
+  active_stack: [add-platform] # Root to active leaf; parent waits for child return
+  checkpoint:
+    id: null
+    kind: null # progression, intervention, skip
+    node_id: null
+    milestone_completed: null
+    proposed_next_milestone: null
+    question: null
+    response: null # continue, fixed_continue, skip, pause, stop; null while awaiting an answer
+  nodes:
+    - id: add-platform
+      parent_id: null
+      skippable: false # Mirrored from the editable plan
+      skip: null # If skipped: reason, decision, timestamp, inherited_from, acceptance_impact
+      procedure: references/add-platform-workflow.md
+      status: in_progress # pending, in_progress, awaiting_input, awaiting_intervention, paused, stopped, blocked, completed
+      scope: null
+      inputs: {} # Source/dirty state, configuration, toolchain, target identities
+      acceptance_conditions: []
+      depends_on: [] # Plan references resolved to concrete IDs at execution
+      cursor: discover
+      outcome: null # passed, failed, blocked, skipped
+      stale: false
+      evidence: []
+      changed_files: []
+      blockers: []
+      next_action: null
+  work_units: []
+  # Instantiate per leaf before execution:
+  # - id: register.beta.mapping
+  #   parent_id: register
+  #   skippable: false
+  #   outcome: null # passed, failed, blocked, skipped, completed_without_commit
+  #   skip: null # reason, decision, timestamp, inherited_from, acceptance_impact
+  #   status: pending # pending, in_progress, verifying, awaiting_intervention, committing, completed, paused, stopped
+  #   prerequisites: []
+  #   owned_paths: []
+  #   inputs: {}
+  #   work_config: null
+  #   work_config_sha256: null
+  #   work_config_snapshot: null
+  #   config_snapshot_history: []
+  #   step_cursor: null
+  #   step_results: [] # Each: id, config/input identity, status, checks, evidence, skip, attempts
+  #   success_criteria:
+  #     - id: dispatch
+  #       expected: null
+  #       verification_procedure: null
+  #       result: pending # pending, pass, fail, blocked
+  #       evidence: []
+  #   report_path: null
+  #   attempts: [] # Each: inputs, checks, results, failure, evidence
+  #   intervention:
+  #     required: false
+  #     issue: null
+  #     user_action: null
+  #     user_response: null
+  #     recheck: null
+  #   commit:
+  #     run_id: null
+  #     attempt_id: null
+  #     policy_source: null # template or leaf_override
+  #     skippable: false
+  #     skip: null
+  #     status: pending # pending, running, verified, failed, unknown, skipped
+  #     head_before: null
+  #     commit_mode: create
+  #     amended_from: null
+  #     expected_parents: []
+  #     amend_authorization: null
+  #     work_id: null
+  #     intended_paths: []
+  #     sha: null
+  #     signoff_identity: null
+  #     verification: null
+  #     commit_shas: [] # Primary and any accepted correction commits
+  #     update_reports: []
+  #     # One entry per actual SHA:
+  #     # - commit_sha: null
+  #     #   policy_source: null
+  #     #   skippable: false
+  #     #   skip: null
+  #     #   status: pending # pending, writing, verified, failed, skipped
+  #     #   path: null
+  #     #   file_sha256: null
+  #     #   acceptance_state: pending
+  #     #   last_updated: null
+  #     #   verification: null
+  #     review:
+  #       status: preparing # awaiting_review, revising, awaiting_result_acceptance, paused, stopped, complete
+  #       round: 0
+  #       candidate: {} # Patch/message paths and SHA-256, HEAD, identities, checks
+  #       acceptance: {} # Accepted round/hashes, candidate response, result response
+  #       pending_question: null
+  #       feedback: []
+  #       history: []
+  #   next_unit: null
+  operation:
+    node_id: null
+    command_attempt_id: null
+    flow_log: null
+    command: null
+    working_directory: null
+    execution_state: null # running, finished, interrupted, unknown
+    exit_code: null
+    log_path: null
+    output_paths: []
+  history: [] # Each: timestamp, node_id, event, checkpoint_id, response, result/evidence
+target:
+  platform_id: null # Identifier accepted by the project's public build interface
+  board_target: null # Exact Zephyr target, including required qualifiers
+  reference_platform: null
+build_interface:
+  entry_points: []
+  registry_files: []
+  ci_files: []
+decisions: [] # Each: question, answer, evidence/source, affected_combinations
+open_questions: [] # Each: question, blocking_stage, affected_combinations
+combinations: []
+# Each combination follows this shape; copy/adapt as needed:
+# - application: sensor
+#   platform: beta
+#   variant: debug
+#   support: requested # requested, existing, unsupported
+#   command: null
+#   shell: null
+#   working_directory: null
+#   environment_variable_names: [] # Names only; never store credentials
+#   command_definition: null
+#   board_target: null
+#   build_directory: null
+#   configuration_fragments: []
+#   overlays: []
+#   domains: []
+#   expected_artifacts: []
+#   acceptance_criteria: []
+#   build_result: not_run # pass, fail, blocked, not_run
+#   build_exit_code: null
+#   hardware_result: not_run
+#   evidence_directory: null
+#   blockers: []
+regression_results: [] # Existing combinations affected by shared changes
+changes: [] # Files and purpose
+next_action: null

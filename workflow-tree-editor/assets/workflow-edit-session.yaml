@@ -1,0 +1,48 @@
+schema_version: 2
+edit_id: null
+skippable: false
+skip: null
+status: discovering # discovering, designing, awaiting_review, applying, reconciling, committing, awaiting_intervention, paused, stopped, complete
+target:
+  repository: null
+  plan_path: null
+  session_path: null
+  original_plan_sha256: null
+  original_files_manifest: null # Plan, root/leaf configs, procedures, and target existence states
+  original_files_manifest_sha256: null
+  source_revision: null
+  return_stack: []
+  return_checkpoint: null
+proposal:
+  parent_id: null
+  position: null # before/after existing sibling ID, or first/last
+  new_ids: []
+  candidate_plan_path: null
+  candidate_plan_sha256: null
+  candidate_files_manifest: null # Full reviewed file set, including candidate procedures/configs
+  file_mapping: [] # Each: target_path, candidate_path; new targets included as originally absent
+  procedure_paths: []
+  affected_existing_ids: []
+  proposed_resume_position: null
+decisions: []
+pending_question: null
+review:
+  round: 0
+  response: null
+  accepted_candidate_sha256: null
+  accepted_files_manifest_sha256: null
+  accepted_file_mapping_sha256: null # Hash exact reviewed target/candidate mapping
+  history: []
+apply:
+  backup_path: null
+  plan_written: false
+  files_written: [] # Track per-file recovery, not just the plan
+  session_reconciled: false
+  validation: null
+commit:
+  skippable: false
+  status: pending
+  review: {}
+  commit_shas: []
+  update_reports: []
+next_action: null

@@ -1,0 +1,54 @@
+# Editable plan, copied into the application alongside the session.
+# skippable allows a user-requested skip; it does not skip automatically.
+# Missing skippable defaults to false. Every instantiated node/unit must include it.
+schema_version: 3
+entrypoint: add-platform
+tools:
+  custom_command:
+    script: zephyr-platform-bringup/scripts/run-custom-command.py # Relative to installed skills parent
+    log_path: workflow-flow.log # Relative to this run's runtime directory
+nodes:
+  - {id: add-platform, parent_id: null, kind: workflow, skippable: false, workflow_config: root-workflow.yaml, children: [discovery-and-assessment, platform-integration, verification, handoff]}
+  - {id: discovery-and-assessment, parent_id: add-platform, kind: workflow, skippable: false, children: [discover, assess, contract]}
+  - {id: discover, parent_id: discovery-and-assessment, kind: workflow, skippable: false, children: [inventory, trace-commands]}
+  - {id: inventory, parent_id: discover, kind: work, skippable: false, criterion: Application/platform/variant matrix matches inspected repository definitions, work_config: leaves/inventory.yaml}
+  - {id: trace-commands, parent_id: discover, kind: work, skippable: false, criterion: Public commands map to target/configuration/output definitions, work_config: leaves/trace-commands.yaml}
+  - {id: assess, parent_id: discovery-and-assessment, kind: workflow, skippable: false, children: [pin-baseline, reconcile-hardware]}
+  - {id: pin-baseline, parent_id: assess, kind: work, skippable: false, criterion: Source and toolchain identities and requirements are recorded, work_config: leaves/pin-baseline.yaml}
+  - {id: reconcile-hardware, parent_id: assess, kind: work, skippable: false, criterion: Required hardware facts have evidence and unknowns have a disposition, work_config: leaves/reconcile-hardware.yaml}
+  - {id: contract, parent_id: discovery-and-assessment, kind: workflow, skippable: false, children: [select-combinations, define-acceptance]}
+  - {id: select-combinations, parent_id: contract, kind: work, skippable: false, criterion: User application/platform/variant scope is recorded, work_config: leaves/select-combinations.yaml}
+  - {id: define-acceptance, parent_id: contract, kind: work, skippable: false, criterion: Each selected combination has a command contract and measurable criteria, work_config: leaves/define-acceptance.yaml}
+  - {id: platform-integration, parent_id: add-platform, kind: workflow, skippable: false, children: [integrate, register]}
+  - {id: integrate, parent_id: platform-integration, kind: workflow, skippable: false, children: [board-support, minimal-compile, peripheral-config]}
+  - {id: board-support, parent_id: integrate, kind: work, skippable: true, criterion: Required board target is discoverable, skip_hint: Existing board support may already satisfy the target, work_config: leaves/board-support.yaml}
+  - {id: minimal-compile, parent_id: integrate, kind: work, skippable: false, criterion: Minimal build exits zero with intended target/configuration, work_config: leaves/minimal-compile.yaml}
+  - {id: peripheral-config, parent_id: integrate, kind: work, skippable: true, expand_per: selected-peripheral, criterion: Required peripheral configuration check passes, skip_hint: No new peripheral integration is in scope, work_config: leaves/peripheral-config.yaml}
+  - {id: register, parent_id: platform-integration, kind: workflow, skippable: false, children: [command-mapping, dispatch-checks, help-ci]}
+  - {id: command-mapping, parent_id: register, kind: work, skippable: false, criterion: New platform command mapping resolves correctly, work_config: leaves/command-mapping.yaml}
+  - {id: dispatch-checks, parent_id: register, kind: work, skippable: false, criterion: Selected and unsupported combinations behave as specified, work_config: leaves/dispatch-checks.yaml}
+  - {id: help-ci, parent_id: register, kind: work, skippable: true, criterion: Maintained help/CI reflects selected support, skip_hint: Repository has no maintained help/CI entry requiring changes, work_config: leaves/help-ci.yaml}
+  - {id: verification, parent_id: add-platform, kind: workflow, skippable: false, children: [build-matrix, hardware]}
+  - {id: build-matrix, parent_id: verification, kind: workflow, skippable: false, children: [build-combination, regression-check]}
+  - {id: build-combination, parent_id: build-matrix, kind: work, skippable: false, expand_per: selected-combination, criterion: Command exits zero and expected artifacts/configuration/evidence are verified, work_config: leaves/build-combination.yaml}
+  - {id: regression-check, parent_id: build-matrix, kind: work, skippable: true, expand_per: affected-existing-combination, criterion: Affected existing command retains expected behavior, skip_hint: No shared behavior is affected, work_config: leaves/regression-check.yaml}
+  - {id: hardware, parent_id: verification, kind: workflow, skippable: true, children: [boot-check, capability-check], skip_hint: Build-only scope or hardware checks deferred}
+  - {id: boot-check, parent_id: hardware, kind: work, skippable: true, criterion: Intended image/device boot meets expected signature, work_config: leaves/boot-check.yaml}
+  - {id: capability-check, parent_id: hardware, kind: work, skippable: true, expand_per: required-runtime-capability, criterion: Measured capability meets agreed threshold, work_config: leaves/capability-check.yaml}
+  - {id: handoff, parent_id: add-platform, kind: workflow, skippable: false, children: [reconcile-results, handoff-report]}
+  - {id: reconcile-results, parent_id: handoff, kind: work, skippable: false, criterion: Required results and all skips/limitations are traceable, work_config: leaves/reconcile-results.yaml}
+  - {id: handoff-report, parent_id: handoff, kind: work, skippable: false, criterion: Commands/evidence/accepted commits and remaining scope are documented, work_config: leaves/handoff-report.yaml}
+commit_child_template:
+  id_suffix: commit
+  kind: workflow
+  skill: git-work-commit
+  skippable: false
+  criterion: Signed-off commit verified and result explicitly accepted by user
+  children: [update-report]
+report_child_template:
+  id_suffix: update-report
+  kind: workflow
+  skill: commit-update-report
+  skippable: false
+  expand_per: actual-commit-sha
+  criterion: SHA-specific UTF-8 txt report exists and matches Git/validation/review evidence

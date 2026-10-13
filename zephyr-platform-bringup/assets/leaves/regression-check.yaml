@@ -1,0 +1,57 @@
+# Resolve the command interactively; the custom command tool executes and logs it.
+schema_version: 1
+work_id: regression-check
+inputs:
+  build_command: null
+steps:
+- id: resolve-command
+  action: inspect
+  skippable: false
+  depends_on: []
+  instructions: Inspect the public wrapper and selected combination; resolve argv
+    or explicit shell command, working directory and environment names into inputs.build_command
+    in the project config. Ask only for missing details. Validate and snapshot the
+    resolved config before executing perform.
+  success_checks:
+  - id: command-ready
+    expected: inputs.build_command contains an inspected executable invocation for
+      the intended combination
+    verification: Validate the command mapping, target and output selection; unresolved
+      command input blocks execution
+    evidence: []
+  checkpoint_after: true
+- id: perform
+  action: command
+  skippable: false
+  depends_on:
+  - resolve-command
+  instructions: Codex executes the resolved and inspected build command, captures
+    its exit code and log, and associates fresh output evidence with this run.
+  success_checks:
+  - id: result-recorded
+    expected: Command exits zero and run-specific artifacts and log are recorded
+    verification: Capture the actual exit code immediately and inspect the expected
+      output for this combination
+    evidence: []
+  checkpoint_after: true
+  command_ref: build_command
+  tool: custom_command
+- id: verify
+  action: inspect
+  skippable: false
+  depends_on:
+  - perform
+  instructions: Verify the aggregate work criterion against the recorded result; do
+    not infer unperformed checks passed.
+  success_checks:
+  - id: criterion-met
+    expected: Affected existing command retains expected behavior
+    verification: Compare the observed result with the criterion and attach the specific
+      command/output/measurement evidence
+    evidence: []
+  checkpoint_after: false
+completion:
+  commit:
+    skippable: null
+  update_report:
+    skippable: null

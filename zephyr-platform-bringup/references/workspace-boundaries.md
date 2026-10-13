@@ -1,0 +1,15 @@
+# Read-only library, writable application, and runtime
+
+During workflow execution this skill repository and installed skill definitions are read-only. Never write sessions, reports, candidates, snapshots, caches, builds or edits into the distribution repository or installed skill folders. Source-maintenance requests that explicitly modify this library are separate from running a workflow.
+
+Before initialization, resolve and save `session.boundaries`: `application_root`, `runtime_root`, and `protected_roots`. Protected roots include the full source library repository when known and the installed bundle/skill directories. The application must be an explicitly selected separate project, not the library itself or its subdirectory. Runtime defaults to `<application>/bringup/<platform>`. If the source copy remains accessible after installation, record its root too. Never derive the application from the skill file's directory or assume the current directory is safe.
+
+When this library is open, ask for the application workspace before starting mutations. Do not initialize Git here, install into here, or silently reuse a library subfolder as the application. Path restrictions or sandbox approvals still apply to the selected external project.
+
+Copy templates into project-owned runtime paths before editing. The tree editor edits those copies only during a run, even if a bundled default seems easier to change. Commands execute from their confirmed application working directory; inspect wrappers for writes beyond allowed roots. Check output/cache/temp/env paths. Run Python helpers with `-B` or `PYTHONDONTWRITEBYTECODE=1` so importing library modules does not write `__pycache__`. Build outputs and scratch files belong to application/runtime directories.
+
+Before each file mutation or mutating command, run the companion reset skill's `scripts/boundary-check.py` with application/runtime, proposed write paths, and saved protected roots. Resolve symlinks/junctions and check every destination; recheck after path/config changes. Git staging/commits operate only on the selected application repository and exclude library/installed definitions. A command with unknown destinations must be inspected/resolved before execution.
+
+The evidence collector and file-state helper independently refuse output inside their library parent. Arbitrary external build tools remain subject to inspection and Codex permissions: instructions/path checks are not an OS filesystem sandbox. For enforced protection against arbitrary commands, configure the execution environment to mount/permit library roots read-only while allowing writes to the application/runtime. Do not claim that the conversational rule alone enforces all external processes.
+
+`workflow-help` is read-only and may be used at any checkpoint without progressing it. `workflow-reset` archives execution state and restarts the selected run/subtree without deleting source, commits, configurations or hardware state. These are on-demand lifecycle actions, not mandatory stages or per-work commit triggers.

@@ -1,0 +1,75 @@
+# Editable event sequence. Workflow steps determine root child execution order.
+schema_version: 1
+workflow_id: add-platform
+inputs: {}
+steps:
+  - id: initialize
+    action: inspect
+    skippable: false
+    depends_on: []
+    instructions: First resolve a separate application/runtime workspace and protected library roots; check write destinations before copying templates or saving state. Load and validate project plan/configs; initialize or reconcile saved session/profile, stale inputs and interrupted operations
+    success_checks:
+      - id: ready
+        expected: Application/runtime paths respect protected library boundaries; plan/configs are valid and active resume position and unresolved issues are identified
+        verification: Validate files and inspect saved state and actual source/operation evidence
+        evidence: []
+    checkpoint_after: true
+  - id: discovery
+    action: workflow
+    workflow: discovery-and-assessment
+    skippable: false
+    depends_on: [initialize]
+    instructions: Enter discovery and assessment; consume the child's saved result before advancing
+    success_checks:
+      - id: assessed
+        expected: Required child work is complete with accepted commits/reports or explicitly permitted dispositions
+        verification: Inspect child results, criteria, skip impact and commit/report completion
+        evidence: []
+    checkpoint_after: true
+  - id: integration
+    action: workflow
+    workflow: platform-integration
+    skippable: false
+    depends_on: [discovery]
+    instructions: Enter platform integration with the agreed contract and assessed hardware inputs
+    success_checks:
+      - id: integrated
+        expected: Required integration and command-registration work satisfies its criteria
+        verification: Inspect child criteria, accepted commits and update reports
+        evidence: []
+    checkpoint_after: true
+  - id: verification
+    action: workflow
+    workflow: verification
+    skippable: false
+    depends_on: [integration]
+    instructions: Verify the selected build matrix and agreed hardware scope; retain explicit skipped/pending results
+    success_checks:
+      - id: verified
+        expected: Agreed verification scope is satisfied with valid evidence and all omissions disclosed
+        verification: Inspect build/runtime criteria, dispositions, accepted commits and reports
+        evidence: []
+    checkpoint_after: true
+  - id: handoff
+    action: workflow
+    workflow: handoff
+    skippable: false
+    depends_on: [verification]
+    instructions: Enter handoff after required predecessor results are valid
+    success_checks:
+      - id: handed-off
+        expected: Required handoff work and accepted commit/report are complete
+        verification: Read handoff deliverable and trace its criteria/evidence/commits
+        evidence: []
+    checkpoint_after: true
+  - id: finalize
+    action: inspect
+    skippable: false
+    depends_on: [handoff]
+    instructions: Reconcile completion against agreed scope and persist final session state; do not create empty rollup commits
+    success_checks:
+      - id: complete
+        expected: Final state accurately represents completed scope and retained limitations
+        verification: Read back session and compare with accepted child results and handoff
+        evidence: []
+    checkpoint_after: false

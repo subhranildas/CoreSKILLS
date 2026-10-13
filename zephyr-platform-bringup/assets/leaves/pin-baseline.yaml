@@ -1,0 +1,38 @@
+# Editable project starting point; customize actions/commands and checks before execution.
+schema_version: 1
+work_id: pin-baseline
+inputs: {}
+steps:
+- id: perform
+  action: inspect
+  skippable: false
+  depends_on: []
+  instructions: Record application/Zephyr/module revisions, dirty state, vendor SDK
+    and compiler/tool versions.
+  success_checks:
+  - id: result-recorded
+    expected: The specified action is complete with relevant observations and evidence
+      recorded
+    verification: Inspect the action result and its evidence; unresolved required
+      inputs or checks block completion
+    evidence: []
+  checkpoint_after: true
+- id: verify
+  action: inspect
+  skippable: false
+  depends_on:
+  - perform
+  instructions: Verify the aggregate work criterion against the recorded result; do
+    not infer unperformed checks passed.
+  success_checks:
+  - id: criterion-met
+    expected: Source and toolchain identities and requirements are recorded
+    verification: Compare the observed result with the criterion and attach the specific
+      command/output/measurement evidence
+    evidence: []
+  checkpoint_after: false
+completion:
+  commit:
+    skippable: null
+  update_report:
+    skippable: null

@@ -1,0 +1,61 @@
+# Copy into the application workspace. Null means unknown, not verified.
+schema_version: 1
+platform:
+  name: null
+  build_platform_id: null # May differ from Zephyr's board target
+  board_target: null
+  hardware_revision: null
+  soc: null
+  core: null
+  schematics: null
+source:
+  application_path: null
+  application_revision: null
+  zephyr_revision: null
+  vendor_sdk_revision: null
+  manifest_path: null
+toolchain:
+  host: null
+  sdk_version: null
+  compiler_version: null
+  west_version: null
+build:
+  # This section describes the baseline build. Per-application/variant commands
+  # and results belong in bringup-session.yaml when there are several combinations.
+  command: null
+  shell: null
+  working_directory: null
+  command_definition: null
+  environment_variable_names: []
+  directory: null
+  configuration_fragments: []
+  overlays: []
+  sysbuild: false
+  domains: []
+hardware:
+  supply_voltage_v: null
+  oscillator_hz: null
+  console:
+    transport: null
+    device: null
+    baud_rate: null
+    pins: []
+  debug:
+    runner: null
+    probe: null
+    device_id: null
+  peripherals: [] # Each: name, bus, pins, address/chip-select, required driver
+boot:
+  bootloader: null
+  signing_required: null
+  partition_source: null
+  recovery_procedure: null
+acceptance:
+  boot_signature: null
+  requirements: [] # Each: capability, procedure, pass_criterion, result, evidence
+evidence:
+  directory: null
+  build_exit_code: null
+  flash_exit_code: null
+  image_sha256: null
+blockers: []
