@@ -1,0 +1,39 @@
+# Standalone record; parent workflows use the same fields in commit.review.
+schema_version: 3
+repository: null
+work_id: null
+run_id: null
+attempt_id: null
+policy_source: null # template, leaf_override, standalone
+skippable: false # Parent plan controls this when nested; change explicitly if needed
+skip: null # reason, decision, timestamp, acceptance_impact
+status: preparing # preparing, awaiting_review, revising, committing, awaiting_result_acceptance, awaiting_intervention, paused, stopped, complete
+round: 0
+head_before: null
+commit_mode: create # create or explicitly authorized amend
+amended_from: null
+expected_parents: [] # Actual expected parent list, including [] for an initial commit
+amend_authorization: null
+candidate:
+  patch_path: null
+  patch_sha256: null
+  message_path: null
+  message_sha256: null
+  intended_paths: []
+  author_identity: null
+  committer_identity: null
+  signoff_identity: null
+  validation: []
+acceptance:
+  candidate_round: null
+  candidate_patch_sha256: null
+  candidate_message_sha256: null
+  candidate_response: null
+  result_response: null
+commit_shas: []
+report_directory: null
+update_reports: [] # Per SHA: skippable, status, path, file_sha256, acceptance_state, verification
+pending_question: null
+feedback: []
+history: [] # Each: round, event, response, candidate hashes, SHA, verification
+next_action: null

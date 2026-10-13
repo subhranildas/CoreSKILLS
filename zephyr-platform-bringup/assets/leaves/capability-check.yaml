@@ -1,0 +1,38 @@
+# Editable project starting point; customize actions/commands and checks before execution.
+schema_version: 1
+work_id: capability-check
+inputs: {}
+steps:
+- id: perform
+  action: manual
+  skippable: false
+  depends_on: []
+  instructions: Perform the selected capability procedure on the intended hardware
+    and measure against its recorded threshold.
+  success_checks:
+  - id: result-recorded
+    expected: The specified action is complete with relevant observations and evidence
+      recorded
+    verification: Inspect the action result and its evidence; unresolved required
+      inputs or checks block completion
+    evidence: []
+  checkpoint_after: true
+- id: verify
+  action: inspect
+  skippable: false
+  depends_on:
+  - perform
+  instructions: Verify the aggregate work criterion against the recorded result; do
+    not infer unperformed checks passed.
+  success_checks:
+  - id: criterion-met
+    expected: Measured capability meets agreed threshold
+    verification: Compare the observed result with the criterion and attach the specific
+      command/output/measurement evidence
+    evidence: []
+  checkpoint_after: false
+completion:
+  commit:
+    skippable: null
+  update_report:
+    skippable: null

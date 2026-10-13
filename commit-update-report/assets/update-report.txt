@@ -1,0 +1,40 @@
+COMMIT UPDATE REPORT
+
+Work ID: <work-id>
+Run ID: <run-id>
+Commit attempt ID: <attempt-id>
+Workflow: <parent/child/work path>
+Application / platform / variant: <scope or not applicable>
+Generated at: <timestamp with timezone>
+Updated at: <timestamp with timezone>
+
+COMMIT
+SHA: <full commit SHA>
+Parent(s): <full parent SHA(s)>
+Subject: <actual subject>
+Author: <actual identity>
+Committer: <actual identity>
+Signed-off-by: <actual trailer(s) or missing>
+Cryptographic signature verification: <verified / failed / not checked / not required>
+Related primary/correction/superseded commits: <SHA(s) or none>
+
+CHANGES
+Purpose: <concrete problem and resulting behavior>
+Changed files: <actual committed paths and concise purpose of each>
+
+VALIDATION
+Success criteria: <criterion and observed result>
+Commands and exit codes: <recorded checks or not run>
+Build results: <pass / fail / blocked / not run / not applicable>
+Hardware results: <pass / fail / blocked / not run / not applicable>
+Evidence: <paths and recorded hashes where available>
+Commit verification: <result and observations>
+
+REVIEW AND WORKFLOW STATE
+Candidate review: <round and acceptance state>
+Result acceptance: <pending / accepted / correction requested>
+Skipped work: <IDs and reasons or none>
+Blockers and limitations: <facts or none>
+Next action: <next checkpoint or intervention>
+
+This report describes the identified commit. Pending or skipped checks are not passes.
