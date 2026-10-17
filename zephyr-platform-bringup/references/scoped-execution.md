@@ -1,5 +1,7 @@
 # Run one workflow or work leaf independently
 
+Apply [development execution profiles](execution-profiles.md) before scheduling. Structural membership remains in `allowed_node_ids`; only `executable_node_ids` may run. Persist `disabled_nodes`, profile identity and `profile_blockers` in the execution record. A disabled ancestor also disables scoped descendants. A fully disabled selection returns `disabled`, not passed, without running work or creating commits.
+
 The bringup entry supports `full` (default) and `scoped` execution. A scoped run selects one existing node ID and executes only its subtree. Selecting a work leaf executes its configured steps and commit/report children. Selecting a workflow executes its descendants in their existing order. It does not modify the plan's root, membership, flags or procedures.
 
 ## Select and bootstrap

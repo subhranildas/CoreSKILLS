@@ -3,6 +3,11 @@
 # Missing skippable defaults to false. Every instantiated node/unit must include it.
 schema_version: 3
 entrypoint: add-platform
+# Project-local development overrides. Applies independently of skippable.
+# Example: disabled: {hardware: {reason: Board unavailable during testing}}
+execution_profile:
+  name: default
+  disabled: {}
 tools:
   custom_command:
     script: zephyr-platform-bringup/scripts/run-custom-command.py # Relative to installed skills parent

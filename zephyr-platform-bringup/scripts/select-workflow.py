@@ -53,8 +53,47 @@ def selection(plan, directory, node_id, instances=None):
         if step.get('workflow') in relevant:
             for dep in step.get('depends_on', []):
                 prerequisite(dep)
+    disabled = {}
+    overrides = plan.get('execution_profile', {}).get('disabled', {})
+    for key in allowed:
+        ancestor = key
+        while ancestor is not None:
+            if ancestor in overrides:
+                disabled[key] = {'disabled_by': ancestor, 'reason': overrides[ancestor]['reason'], 'status': 'disabled'}
+                break
+            ancestor = nodes[ancestor]['parent_id']
+    # Retain selection membership for reporting, while exposing a distinct
+    # executable set. Disabled prerequisites are never silently satisfied.
+    def affected(key):
+        ancestor = key
+        while ancestor is not None:
+            if ancestor in overrides:
+                return True
+            ancestor = nodes[ancestor]['parent_id']
+        return any(affected(child) for child in nodes[key].get('children', []))
+    blockers = []
+    for key in allowed:
+        if key in disabled:
+            continue
+        for dep in nodes[key].get('depends_on', []):
+            if affected(dep):
+                blockers.append({'node': key, 'dependency': dep})
+    active = set(allowed) - set(disabled)
+    relevant = active | (set(ancestors) if active else set())
+    def affected_event(step_id):
+        step = by_step[step_id]
+        return ((step.get('workflow') is not None and affected(step['workflow'])) or
+                any(affected_event(dep) for dep in step.get('depends_on', [])))
+    for step in root_config['steps']:
+        if step.get('workflow') in relevant:
+            for dep in step.get('depends_on', []):
+                if affected_event(dep):
+                    blockers.append({'node': step['workflow'], 'dependency': dep})
     return {'mode': 'full' if node_id == root else 'scoped', 'selected_node': node_id,
             'allowed_node_ids': allowed, 'context_ancestors': ancestors,
+            'executable_node_ids': [key for key in allowed if key not in disabled],
+            'disabled_nodes': disabled, 'profile_blockers': blockers,
+            'execution_profile': plan.get('execution_profile', {'name': 'default', 'disabled': {}}),
             'external_prerequisite_ids': sorted(dependencies - set(allowed) - set(ancestors)),
             'instance_filters': instances or {},
             'expansion_requirements': [{'id': key, 'expand_per': nodes[key]['expand_per']}

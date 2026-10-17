@@ -15,6 +15,10 @@ Start with [setup](docs/setup.md) and [usage](docs/usage.md), or invoke `$workfl
 
 The library is read-only during workflow execution. Run workflows in a separate application workspace; keep state, logs, reports, and editable project configurations there.
 
+Project-local `execution_profile.disabled` overrides can exclude work or whole subtrees during development. See [development profiles](zephyr-platform-bringup/references/execution-profiles.md) for reasons, dependency blocking, and resume rules.
+
+An experimental Python CLI is included with lifecycle tests and packaging metadata; see the [CLI guide](workflow-help/references/cli-guide.md). It is still under development and does not yet replace the complete conversational workflow.
+
 ## Verification
 
 Python 3.9+ and PyYAML are required for workflow validation. Git is required for commit-recovery integration tests.

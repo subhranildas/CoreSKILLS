@@ -63,6 +63,55 @@ class ScopeTests(unittest.TestCase):
         selector.selection(self.plan, ASSETS, 'register')
         self.assertEqual(self.plan, before)
 
+    def disable(self, **entries):
+        self.plan['execution_profile'] = {'name': 'development', 'disabled': {key: {'reason': reason} for key, reason in entries.items()}}
+
+    def test_disabled_workflow_excludes_subtree_without_mutating_plan(self):
+        self.disable(hardware='No board')
+        before = copy.deepcopy(self.plan)
+        result = selector.selection(self.plan, ASSETS, 'verification')
+        self.assertNotIn('hardware', result['executable_node_ids'])
+        self.assertNotIn('boot-check', result['executable_node_ids'])
+        self.assertIn('build-combination', result['executable_node_ids'])
+        self.assertEqual(result['disabled_nodes']['boot-check']['disabled_by'], 'hardware')
+        self.assertEqual(result['disabled_nodes']['boot-check']['status'], 'disabled')
+        self.assertEqual(self.plan, before)
+
+    def test_disabled_required_leaf_and_scoped_parent_override(self):
+        self.disable(inventory='Testing another stage')
+        result = selector.selection(self.plan, ASSETS, 'inventory')
+        self.assertEqual(result['executable_node_ids'], [])
+        self.disable(discover='Testing another stage')
+        result = selector.selection(self.plan, ASSETS, 'inventory')
+        self.assertEqual(result['executable_node_ids'], [])
+
+    def test_disabled_dependency_blocks(self):
+        next(n for n in self.plan['nodes'] if n['id'] == 'trace-commands')['depends_on'] = ['inventory']
+        self.disable(inventory='Development')
+        result = selector.selection(self.plan, ASSETS, 'discover')
+        self.assertIn({'node': 'trace-commands', 'dependency': 'inventory'}, result['profile_blockers'])
+
+    def test_disabled_root_predecessor_blocks_scoped_descendant(self):
+        self.disable(**{'platform-integration': 'Development'})
+        result = selector.selection(self.plan, ASSETS, 'build-combination')
+        self.assertTrue(result['profile_blockers'])
+
+    def test_invalid_profile_rejected(self):
+        for profile in ({'name': 'dev', 'disabled': {'missing': {'reason': 'test'}}},
+                        {'name': 'dev', 'disabled': {'add-platform': {'reason': 'test'}}},
+                        {'name': 'dev', 'disabled': {'inventory': {'reason': ''}}},
+                        {'name': 'dev', 'disabled': []}, {'name': '', 'disabled': {}}):
+            self.plan['execution_profile'] = profile
+            with self.assertRaises(ValueError):
+                selector.selection(self.plan, ASSETS, 'inventory')
+
+    def test_absent_or_empty_profile_preserves_selection(self):
+        self.plan.pop('execution_profile', None)
+        result = selector.selection(self.plan, ASSETS, 'add-platform')
+        self.assertEqual(result['allowed_node_ids'], result['executable_node_ids'])
+        self.assertEqual(result['disabled_nodes'], {})
+        self.assertEqual(result['profile_blockers'], [])
+
 
 if __name__ == '__main__':
     unittest.main()

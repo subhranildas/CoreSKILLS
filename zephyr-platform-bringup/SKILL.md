@@ -18,6 +18,8 @@ Use [workflow-help](../workflow-help/SKILL.md) for onboarding or checkpoint expl
 
 ## Interactive new-platform workflow
 
+Read [execution-profiles.md](references/execution-profiles.md) when loading a project plan with development overrides. Honor the selector's executable IDs, disabled dispositions and dependency blockers for full and scoped runs. Profile edits require checkpoint reconciliation; disabled work never runs or counts as passed.
+
 Support independent workflow/subworkflow/work-leaf entry through [scoped-execution.md](references/scoped-execution.md). An explicit named selection runs only that subtree with separate state/logs and prerequisite checks; it never advances into siblings or claims full bringup completion. Use `scripts/select-workflow.py` to validate and preview scope. Full-tree execution remains the default when no narrower selection is requested.
 
 Use the [custom command tool](references/custom-command-tool.md) for configured `tool: custom_command` command steps and flow-log events. Initialize its installed script path and runtime log from the plan's tool registry. Append stage/work entry/return, verification outcomes, checkpoints and user decisions through event mode; command steps capture stdout/stderr and exit codes through run mode. Save state before execution and retain existing gates and resume rules.

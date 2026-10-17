@@ -1,0 +1,7 @@
+recursive-include zephyr-platform-bringup *.md *.py *.yaml *.txt
+recursive-include git-work-commit *.md *.py *.yaml *.txt
+recursive-include commit-update-report *.md *.py *.yaml *.txt
+recursive-include workflow-tree-editor *.md *.py *.yaml *.txt
+recursive-include workflow-reset *.md *.py *.yaml *.txt
+recursive-include workflow-help *.md *.py *.yaml *.txt
+global-exclude __pycache__ *.pyc

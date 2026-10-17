@@ -193,6 +193,19 @@ def validate(plan, directory):
             raise ValueError(f'{key}: duplicate dependency')
         nodes[key] = node
     root = plan.get('entrypoint')
+    profile = plan.get('execution_profile', {'name': 'default', 'disabled': {}})
+    if not isinstance(profile, dict) or set(profile) - {'name', 'disabled'}:
+        raise ValueError('execution_profile supports only name and disabled')
+    if not isinstance(profile.get('name'), str) or not profile['name'].strip():
+        raise ValueError('execution_profile requires a nonempty name')
+    disabled = profile.get('disabled', {})
+    if not isinstance(disabled, dict):
+        raise ValueError('execution_profile.disabled must map node IDs to reasons')
+    for key, entry in disabled.items():
+        if key not in nodes or key == root:
+            raise ValueError(f'Invalid disabled node: {key}; the root cannot be disabled')
+        if not isinstance(entry, dict) or set(entry) != {'reason'} or not isinstance(entry['reason'], str) or not entry['reason'].strip():
+            raise ValueError(f'{key}: disabled entry requires only a nonempty reason')
     if not isinstance(root, str) or root not in nodes or nodes[root].get('parent_id') is not None:
         raise ValueError('Entrypoint must identify the root with null parent')
     root_children = nodes[root].get('children', [])

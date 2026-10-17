@@ -36,6 +36,8 @@ If application names or the reference platform are unknown, omit those sentences
 
 ## Run one workflow independently
 
+To turn work off during development, edit `execution_profile.disabled` in your project plan. For example, `hardware: {reason: Board unavailable}` disables that subtree. Disabled work is recorded separately from passed/skipped work; unresolved dependencies block execution. See [development profiles](../../zephyr-platform-bringup/references/execution-profiles.md) for configuration, previews and resume rules.
+
 Select an existing node ID to run just that workflow, subworkflow, or work leaf:
 
 ```text

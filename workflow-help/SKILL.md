@@ -19,6 +19,7 @@ The full user guides are included with this skill; do not depend on the source r
 | Start a complete bringup | [User guide](references/user-guide.md): Protect the library; Start a platform addition |
 | Run one workflow/subworkflow/leaf or select an instance | User guide: Run one workflow independently; [scoped execution](../zephyr-platform-bringup/references/scoped-execution.md) |
 | Continue/Skip/Pause/Stop, optional versus required work | User guide: Nested workflows and checkpoint control |
+| Temporarily disable work during development/testing | [Development execution profiles](../zephyr-platform-bringup/references/execution-profiles.md) |
 | Success criteria, failed checks, user intervention | User guide: Work units, failures, and commits |
 | Review loop, signoff, correction/amend, recovery | User guide: Work units, failures, and commits; [commit skill](../git-work-commit/SKILL.md) |
 | Per-commit txt updates and report failures | User guide: Per-commit update reports; [report skill](../commit-update-report/SKILL.md) |
